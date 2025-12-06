@@ -1,0 +1,53 @@
+.game-board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.game-board {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  background-color: #bbada0;
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.grid-background {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  position: absolute;
+  inset: 5px;
+}
+
+.grid-cell {
+  background-color: rgba(238, 228, 218, 0.35);
+  border-radius: 8px;
+}
+
+.tiles-container {
+  position: absolute;
+  inset: 5px;
+}
+
+/* Responsive sizing */
+@media (max-width: 600px) {
+  .game-board-container {
+    padding: 10px;
+  }
+
+  .game-board {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 400px) {
+  .game-board {
+    max-width: 320px;
+  }
+}

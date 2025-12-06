@@ -1,0 +1,72 @@
+.tile {
+  position: absolute;
+  width: calc(25% - 10px);
+  height: calc(25% - 10px);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.15s ease-in-out;
+  
+  /* Position based on CSS variables */
+  top: calc(var(--row) * 25% + 5px);
+  left: calc(var(--col) * 25% + 5px);
+  
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.tile-inner {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  user-select: none;
+}
+
+/* New tile animation */
+.tile-new {
+  animation: tile-appear 0.2s ease-in-out;
+}
+
+@keyframes tile-appear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Merged tile animation */
+.tile-merged {
+  animation: tile-merge 0.2s ease-in-out;
+}
+
+@keyframes tile-merge {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive font sizes */
+@media (max-width: 600px) {
+  .tile-inner {
+    font-size: clamp(1rem, 5vw, 1.8rem);
+  }
+}
+
+@media (max-width: 400px) {
+  .tile-inner {
+    font-size: clamp(0.8rem, 6vw, 1.5rem);
+  }
+}
