@@ -55,16 +55,142 @@
   transform: translateY(0);
 }
 
+.current-stats {
+  display: flex;
+  gap: 15px;
+  margin: 15px 0;
+  justify-content: center;
+}
+
+.stat-box {
+  background: linear-gradient(135deg, #f67c5f 0%, #f59563 100%);
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(246, 124, 95, 0.3);
+  min-width: 100px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.stat-value.highlight {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.stat-value.combo-active {
+  color: #fff;
+  animation: combo-pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes combo-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.combo-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
+  z-index: 1000;
+  animation: combo-appear 0.5s ease-out;
+  pointer-events: none;
+  text-align: center;
+}
+
+@keyframes combo-appear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.achievement-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  z-index: 1000;
+  animation: achievement-slide 0.5s ease-out;
+}
+
+@keyframes achievement-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .instructions {
   text-align: center;
   margin-top: 20px;
   color: #776e65;
   font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.8;
+  max-width: 500px;
 }
 
 .instructions p {
-  margin: 5px 0;
+  margin: 8px 0;
+}
+
+.instructions strong {
+  color: #f67c5f;
+  font-weight: 600;
 }
 
 @media (max-width: 600px) {
@@ -83,6 +209,31 @@
   .new-game-button {
     padding: 10px 25px;
     font-size: 0.9rem;
+  }
+
+  .current-stats {
+    gap: 10px;
+  }
+
+  .stat-box {
+    padding: 10px 20px;
+    min-width: 80px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .combo-notification {
+    font-size: 1.2rem;
+    padding: 15px 30px;
+  }
+
+  .achievement-notification {
+    top: 10px;
+    right: 10px;
+    font-size: 0.9rem;
+    padding: 12px 20px;
   }
 
   .instructions {
