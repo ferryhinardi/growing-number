@@ -43,7 +43,7 @@ export function useBoard(): UseBoardResult {
       }
 
       // Clear isNew and mergedFrom flags from previous tiles
-      const cleanedTiles = result.tiles.map((tile) => ({
+      const cleanedTiles: Tile[] = result.tiles.map((tile) => ({
         ...tile,
         isNew: false,
         mergedFrom: undefined,

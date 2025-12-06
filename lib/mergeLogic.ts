@@ -82,7 +82,7 @@ function redistributeLine(
   isRow: boolean,
   reverse: boolean
 ): Tile[] {
-  const positions = [];
+  const positions: number[] = [];
   
   for (let i = 0; i < GRID_SIZE; i++) {
     if (isRow) {
