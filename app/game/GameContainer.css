@@ -29,9 +29,16 @@
 
 .controls {
   margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.new-game-button {
+.new-game-button,
+.undo-button,
+.stats-button,
+.sound-button {
   background-color: #8f7a66;
   color: #ffffff;
   border: none;
@@ -45,13 +52,54 @@
   letter-spacing: 1px;
 }
 
-.new-game-button:hover {
-  background-color: #9f8a76;
+.undo-button {
+  background-color: #776e65;
+}
+
+.undo-button:disabled {
+  background-color: #bbb5ab;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.stats-button {
+  background-color: #4CAF50;
+}
+
+.sound-button {
+  background-color: #f67c5f;
+  padding: 12px 20px;
+  font-size: 1.2rem;
+}
+
+.new-game-button:hover,
+.undo-button:hover:not(:disabled),
+.stats-button:hover,
+.sound-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.new-game-button:active {
+.new-game-button:hover {
+  background-color: #9f8a76;
+}
+
+.undo-button:hover:not(:disabled) {
+  background-color: #867d75;
+}
+
+.stats-button:hover {
+  background-color: #5cb85f;
+}
+
+.sound-button:hover {
+  background-color: #f68c6f;
+}
+
+.new-game-button:active,
+.undo-button:active:not(:disabled),
+.stats-button:active,
+.sound-button:active {
   transform: translateY(0);
 }
 
@@ -206,9 +254,21 @@
     font-size: 0.9rem;
   }
 
-  .new-game-button {
-    padding: 10px 25px;
-    font-size: 0.9rem;
+  .controls {
+    gap: 8px;
+  }
+
+  .new-game-button,
+  .undo-button,
+  .stats-button,
+  .sound-button {
+    padding: 10px 15px;
+    font-size: 0.8rem;
+  }
+
+  .sound-button {
+    padding: 10px 12px;
+    font-size: 1rem;
   }
 
   .current-stats {

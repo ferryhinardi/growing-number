@@ -11,17 +11,23 @@ interface UseBoardResult {
   move: (direction: Direction) => { moved: boolean; score: number };
   resetBoard: () => void;
   isGameOver: boolean;
+  undo: () => { undone: boolean; previousScore: number };
+  canUndo: boolean;
 }
 
 export function useBoard(): UseBoardResult {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [previousState, setPreviousState] = useState<{ tiles: Tile[]; score: number } | null>(null);
+  const [canUndo, setCanUndo] = useState(false);
 
   // Initialize board
   const resetBoard = useCallback(() => {
     const initialTiles = spawnInitialTiles();
     setTiles(initialTiles);
     setIsGameOver(false);
+    setPreviousState(null);
+    setCanUndo(false);
   }, []);
 
   // Initialize on mount
@@ -42,6 +48,11 @@ export function useBoard(): UseBoardResult {
         return { moved: false, score: 0 };
       }
 
+      // Save previous state for undo (only if we can still undo)
+      if (canUndo || !previousState) {
+        setPreviousState({ tiles: tiles, score: result.score });
+      }
+
       // Clear isNew and mergedFrom flags from previous tiles
       const cleanedTiles: Tile[] = result.tiles.map((tile) => ({
         ...tile,
@@ -59,6 +70,7 @@ export function useBoard(): UseBoardResult {
       }
 
       setTiles(updatedTiles);
+      setCanUndo(true);
 
       // Check for game over
       if (!hasValidMoves(updatedTiles)) {
@@ -67,13 +79,28 @@ export function useBoard(): UseBoardResult {
 
       return { moved: true, score: result.score };
     },
-    [tiles, isGameOver]
+    [tiles, isGameOver, canUndo, previousState]
   );
+
+  // Undo last move (only once per game)
+  const undo = useCallback((): { undone: boolean; previousScore: number } => {
+    if (!canUndo || !previousState) {
+      return { undone: false, previousScore: 0 };
+    }
+
+    setTiles(previousState.tiles);
+    setCanUndo(false);
+    setIsGameOver(false);
+    
+    return { undone: true, previousScore: previousState.score };
+  }, [canUndo, previousState]);
 
   return {
     tiles,
     move,
     resetBoard,
     isGameOver,
+    undo,
+    canUndo,
   };
 }

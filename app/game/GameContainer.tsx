@@ -7,22 +7,31 @@ import { useInput } from '@/app/hooks/useInput';
 import { GameBoard } from '@/app/game/GameBoard';
 import { ScoreBoard } from '@/app/game/ScoreBoard';
 import { GameOver } from '@/app/game/GameOver';
+import { StatsModal } from '@/app/game/StatsModal';
 import { Direction } from '@/lib/types';
+import { soundEffects } from '@/lib/soundEffects';
+import { updateStats, addToLeaderboard } from '@/lib/storage';
 import './GameContainer.css';
 
 export function GameContainer() {
-  const { tiles, move, resetBoard, isGameOver } = useBoard();
+  const { tiles, move, resetBoard, isGameOver, undo, canUndo } = useBoard();
   const { score, bestScore, moves, addScore, resetGame, updateMaxTile } =
     useGameManager();
 
   const [combo, setCombo] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
   const [showCombo, setShowCombo] = useState(false);
   const [lastMergeCount, setLastMergeCount] = useState(0);
   const [achievements, setAchievements] = useState<string[]>([]);
   const [showAchievement, setShowAchievement] = useState<string | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   // Handle player move
   const handleMove = (direction: Direction) => {
+    if (!gameStarted) setGameStarted(true);
+    
     const result = move(direction);
     if (result.moved) {
       // Calculate combo based on merges
@@ -31,11 +40,21 @@ export function GameContainer() {
       if (mergeCount > 0) {
         const newCombo = combo + 1;
         setCombo(newCombo);
+        setMaxCombo(Math.max(maxCombo, newCombo));
         setLastMergeCount(mergeCount);
+        
+        // Play merge sound
+        const maxTileValue = Math.max(...tiles.map(t => t.value));
+        soundEffects.merge(maxTileValue);
         
         // Show combo feedback
         setShowCombo(true);
         setTimeout(() => setShowCombo(false), 1000);
+        
+        // Play combo sound for streaks
+        if (newCombo > 1) {
+          soundEffects.combo(newCombo);
+        }
         
         // Apply combo multiplier to score
         const multiplier = Math.min(1 + (newCombo * 0.2), 3);
@@ -94,7 +113,30 @@ export function GameContainer() {
 
   const showAchievementPopup = (message: string) => {
     setShowAchievement(message);
+    soundEffects.achievement();
     setTimeout(() => setShowAchievement(null), 3000);
+  };
+
+  // Handle undo
+  const handleUndo = () => {
+    const result = undo();
+    if (result.undone) {
+      soundEffects.click();
+      addScore(-result.previousScore);
+    }
+  };
+
+  // Toggle sound
+  const handleToggleSound = () => {
+    const enabled = soundEffects.toggle();
+    setSoundEnabled(enabled);
+    soundEffects.click();
+  };
+
+  // Toggle stats modal
+  const handleToggleStats = () => {
+    soundEffects.click();
+    setShowStats(!showStats);
   };
 
   // Update max tile when tiles change
@@ -110,12 +152,37 @@ export function GameContainer() {
 
   // Handle game restart
   const handleRestart = () => {
+    soundEffects.click();
+    
+    // Save game stats if game was started
+    if (gameStarted) {
+      const maxTileValue = Math.max(...tiles.map(t => t.value), 0);
+      const won = maxTileValue >= 11; // 2^11 = 2048
+      updateStats(score, moves, maxTileValue, won, maxCombo);
+      addToLeaderboard(score, maxTileValue, moves);
+    }
+    
     resetBoard();
     resetGame();
     setCombo(0);
+    setMaxCombo(0);
     setShowCombo(false);
     setLastMergeCount(0);
+    setGameStarted(false);
   };
+
+  // Handle game over
+  useEffect(() => {
+    if (isGameOver && gameStarted) {
+      soundEffects.gameOver();
+      
+      // Save final stats
+      const maxTileValue = Math.max(...tiles.map(t => t.value), 0);
+      const won = maxTileValue >= 11; // 2^11 = 2048
+      updateStats(score, moves, maxTileValue, won, maxCombo);
+      addToLeaderboard(score, maxTileValue, moves);
+    }
+  }, [isGameOver, gameStarted, tiles, score, moves, maxCombo]);
 
   // Get current max tile for display
   const maxTileValue = Math.max(...tiles.map((t) => t.value), 0);
@@ -150,6 +217,28 @@ export function GameContainer() {
         <button className="new-game-button" onClick={handleRestart}>
           New Game
         </button>
+        <button 
+          className="undo-button" 
+          onClick={handleUndo}
+          disabled={!canUndo}
+          title="Undo last move (1 per game)"
+        >
+          ↶ Undo
+        </button>
+        <button 
+          className="stats-button" 
+          onClick={handleToggleStats}
+          title="View statistics and leaderboard"
+        >
+          📊 Stats
+        </button>
+        <button 
+          className="sound-button" 
+          onClick={handleToggleSound}
+          title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+        >
+          {soundEnabled ? '🔊' : '🔇'}
+        </button>
       </div>
 
       <GameBoard tiles={tiles} />
@@ -183,6 +272,8 @@ export function GameContainer() {
           onRestart={handleRestart}
         />
       )}
+
+      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
     </div>
   );
 }
