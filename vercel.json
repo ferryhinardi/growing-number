@@ -1,6 +1,6 @@
-# Vercel Configuration for Growing Number
-
-This file is optional for Vercel deployment.
-
-# Environment Variables (if needed)
-# Add any environment variables here or in Vercel dashboard
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+}
