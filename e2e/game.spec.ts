@@ -31,7 +31,7 @@ test.describe('Growing Number Game', () => {
 
   test('should display scoreboard', async ({ page }) => {
     await expect(page.getByText('Score')).toBeVisible();
-    await expect(page.getByText('Best')).toBeVisible();
+    await expect(page.locator('.score-label', { hasText: 'Best' })).toBeVisible();
     await expect(page.getByText('Moves')).toBeVisible();
   });
 
@@ -41,7 +41,9 @@ test.describe('Growing Number Game', () => {
   });
 
   test('should display instructions', async ({ page }) => {
-    await expect(page.getByText(/use arrow keys or swipe/i)).toBeVisible();
+    const instructions = page.locator('.instructions');
+    await expect(instructions).toBeVisible();
+    await expect(instructions.getByText(/arrow keys or swipe/i)).toBeVisible();
   });
 
   test('should have responsive design', async ({ page }) => {
